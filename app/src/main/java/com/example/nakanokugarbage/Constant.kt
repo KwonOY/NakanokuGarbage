@@ -1,4 +1,4 @@
-package com.example.nananokugarbage
+package com.example.nakanokugarbage
 
 class Constant {
     companion object {

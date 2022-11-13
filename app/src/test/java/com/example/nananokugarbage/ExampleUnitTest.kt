@@ -1,4 +1,4 @@
-package com.example.nananokugarbage
+package com.example.nakanokugarbage
 
 import org.junit.Test
 

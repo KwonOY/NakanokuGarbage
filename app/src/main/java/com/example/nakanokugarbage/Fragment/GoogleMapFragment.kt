@@ -1,7 +1,6 @@
-package com.example.nananokugarbage.Fragment
+package com.example.nakanokugarbage.Fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +8,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.example.nananokugarbage.R
+import com.example.nakanokugarbage.databinding.GooglemapLayoutBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 
 class GoogleMapFragment : Fragment(), OnMapReadyCallback {
 
+    private lateinit var mBinding: GooglemapLayoutBinding
     private lateinit var mMapView: MapView
 
     private var mNakanoLat = 35.7073985
@@ -28,11 +28,13 @@ class GoogleMapFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.googlemap_layout, container, false)
-        mMapView = rootView.findViewById(R.id.mapView)
+
+        mBinding = GooglemapLayoutBinding.inflate(layoutInflater, container, false)
+        mMapView = mBinding.mapView
         mMapView.onCreate(savedInstanceState)
         mMapView.getMapAsync(this)
-        return rootView
+
+        return mBinding.root
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

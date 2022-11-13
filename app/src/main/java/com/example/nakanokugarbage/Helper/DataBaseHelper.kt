@@ -1,15 +1,15 @@
-package com.example.nananokugarbage.Helper
+package com.example.nakanokugarbage.Helper
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.nananokugarbage.Interface.ContactsDao
-import com.example.nananokugarbage.Model.CityBlock
+import com.example.nakanokugarbage.Interface.CityBlockDao
+import com.example.nakanokugarbage.Model.CityBlock
 
 @Database(entities = [CityBlock::class], version = 1, exportSchema = false)
 abstract class DataBaseHelper : RoomDatabase() {
-    abstract fun contactsDao(): ContactsDao
+    abstract fun cityBlockDaoDao(): CityBlockDao
 
     companion object {
         private var instance: DataBaseHelper? = null
