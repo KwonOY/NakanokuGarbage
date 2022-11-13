@@ -1,9 +1,7 @@
 package com.example.nananokugarbage.Activity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.example.nananokugarbage.Fragment.GoogleMapFragment
 import com.example.nananokugarbage.Fragment.SearchFragment
 import com.example.nananokugarbage.R
 
