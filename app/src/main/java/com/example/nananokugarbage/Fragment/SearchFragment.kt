@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment
 import com.example.nananokugarbage.R
 
 class SearchFragment : Fragment() {
+
+    private lateinit var binding: FragmentMainBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
