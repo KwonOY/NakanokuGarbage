@@ -1,19 +1,15 @@
 package com.example.nakanokugarbage.Activity
 
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.nakanokugarbage.Fragment.SearchFragment
 import com.example.nakanokugarbage.Helper.DataBaseHelper
+import com.example.nakanokugarbage.Model.Block
 import com.example.nakanokugarbage.Model.CityBlock
 import com.example.nakanokugarbage.databinding.MainLayoutBinding
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,15 +24,31 @@ class MainActivity : AppCompatActivity() {
         setContentView(mBinding.root)
 
         db = DataBaseHelper.getInstance(this)
-        dbTest()
+        //dbTest()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val client = HttpClient()
-            val response: HttpResponse = client.get("https://maps.googleapis.com/maps/api/geocode/xml?place_id=ChIJeRpOeF67j4AR9ydy_PIzPuM&key=AIzaSyDI4-ug5uLrcWSam3X0r_iFT9bF6BLs-n4")
-            val stringBody: String = response.receive()
-            Log.d("myTest", stringBody)
-            client.close()
+        val dbref = FirebaseDatabase.getInstance().getReference()
+        val childref = dbref.child("block_jp")
+
+        val geocoder = Geocoder(this)
+        val nakanolist = geocoder.getFromLocationName("nakanoku nakano 5", 10)
+        if (nakanolist != null) {
+            Log.d("myTest",nakanolist.size.toString())
+            for(i in 0 until nakanolist.size) {
+                Log.d("myTest",i.toString())
+                Log.d("myTest", nakanolist[i].toString())
+            }
         }
+
+        childref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val test = snapshot.getValue(Block::class.java)
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
 
         val searchFragment = SearchFragment()
         val transaction = supportFragmentManager.beginTransaction()
@@ -50,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         for (i : Int in 1..10) {
             val block = "nakano" + i + "chome"
             val cityblock = CityBlock(i, city, city, city, block, block, block)
-            db!!.cityBlockDaoDao().insertAll(cityblock)
+            db!!.cityBlockDaoDao().insert(cityblock)
         }
     }
 }

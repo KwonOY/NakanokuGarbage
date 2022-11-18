@@ -13,7 +13,7 @@ interface CityBlockDao {
     fun getAll(): List<CityBlock>
 
     @Insert
-    fun insertAll(vararg cityBlocks: CityBlock)
+    fun insert(vararg cityBlocks: CityBlock)
 
     @Delete
     fun delete(cityBlocks: CityBlock)

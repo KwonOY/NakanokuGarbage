@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.nakanokugarbage.Interface.CityBlockDao
 import com.example.nakanokugarbage.Model.CityBlock
+import com.example.nakanokugarbage.R
 
 @Database(entities = [CityBlock::class], version = 1, exportSchema = false)
 abstract class DataBaseHelper : RoomDatabase() {
@@ -20,7 +21,7 @@ abstract class DataBaseHelper : RoomDatabase() {
                 instance = Room.databaseBuilder(
                     context.applicationContext,
                     DataBaseHelper::class.java,
-                    "database"
+                    context.resources.getString(R.string.database_name)
                 )
                     .allowMainThreadQueries()
                     .build()

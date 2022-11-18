@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1042061942265",
+    "firebase_url": "https://nakanokugarbage-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "nakanokugarbage",
+    "storage_bucket": "nakanokugarbage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042061942265:android:ca1c902d08a9a54aafb128",
+        "android_client_info": {
+          "package_name": "com.example.nakanokugarbage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1042061942265-tp93h5g9j5ji9gsopfgk9cgqo0f7b757.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nakanokugarbage",
+            "certificate_hash": "0ac62576e868029d9726bdbf01e80c84a200490e"
+          }
+        },
+        {
+          "client_id": "1042061942265-5t3k77vp1ihdmq3ggneco3ki1icr9o29.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI4-ug5uLrcWSam3X0r_iFT9bF6BLs-n4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1042061942265-5t3k77vp1ihdmq3ggneco3ki1icr9o29.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
