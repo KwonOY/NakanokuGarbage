@@ -2,5 +2,7 @@
     <string name="app_name">NakanokuGarbage</string>
     <string name="edit_text_hint">is EditText Hint</string>
 
+    <string name="firebase_db_block">block_jp</string>
+
     <string name="database_name">database</string>
 </resources>
