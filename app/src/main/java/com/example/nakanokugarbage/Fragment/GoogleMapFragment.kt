@@ -1,39 +1,50 @@
 package com.example.nakanokugarbage.Fragment
 
-import android.location.Geocoder
-import android.os.Build
+import android.location.Address
+import android.location.Location
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import android.widget.Toast
+import com.example.nakanokugarbage.Controller.GoogleMapController
+import com.example.nakanokugarbage.Interface.GoogleMapListener
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.example.nakanokugarbage.databinding.GooglemapLayoutBinding
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 
-class GoogleMapFragment : BaseSearchChildFragment(), OnMapReadyCallback {
+class GoogleMapFragment(listener: SearchFragment.ChildResultListener) : BaseSearchChildFragment(), OnMapReadyCallback {
 
     private lateinit var mBinding: GooglemapLayoutBinding
     private lateinit var mMapView: MapView
-    private lateinit var mGoogleMap: GoogleMap
+    private lateinit var mGoogleMapController: GoogleMapController
+    private val mListener = listener
+    private var needParentNotify = false
 
-    private var mNakanoLat = 35.7073985
-    private var mNakanoLng = 139.6638354
-    private var mNakanoCenterLatLng = LatLng(mNakanoLat, mNakanoLng)
+    private val googleMapListener = object: GoogleMapListener {
+        override fun onAddressesReceive(addresses: List<Address>) {
+            mGoogleMapController.moveCameraGoogleMap(addresses)
+            if(needParentNotify) {
+                mListener.onReceiveResult(addresses[0].getAddressLine(0))
+                needParentNotify = false
+            }
+        }
 
-    // TODO 데이터형으로 가질지 고민중
-    private var mTokyoLowerLatitude = 35.513
-    private var mTokyoLowerLongitude = 139.555
-    private var mTokyoUpperLatitude = 35.821
-    private var mTokyoUpperLongitude = 139.923
+        override fun onFailedLocation() {
+            mGoogleMapController.moveCameraGoogleMap()
+            Toast.makeText(context, "cant search last LatLng", Toast.LENGTH_SHORT).show()
+        }
 
-    private var mFirstZoomLevel = 13f
-    private var mZoomLevel = 17f
+        override fun onLocationChanged(location: Location) {
+            needParentNotify = true
+            val currentLatLng = LatLng(location.latitude, location.longitude)
+            mGoogleMapController.searchAddressFromLocationLatLng(currentLatLng)
+            mGoogleMapController.makeMarkGoogleMap(currentLatLng)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,32 +60,17 @@ class GoogleMapFragment : BaseSearchChildFragment(), OnMapReadyCallback {
         return mBinding.root
     }
 
-    // TODO 버전 낮춰서도 할것
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    override fun setSearchResultText(searchText: String) {
+    override fun onMapReady(googleMap: GoogleMap) {
         context?.let {
-            val geocoder = Geocoder(it)
-            geocoder.getFromLocationName(
-                searchText, 5,
-                mTokyoLowerLatitude, mTokyoLowerLongitude, mTokyoUpperLatitude, mTokyoUpperLongitude
-            ) { addresses ->
-                val address = addresses.get(0)
-                val latLng = LatLng(address.latitude, address.longitude)
-                Handler(Looper.getMainLooper()).post {
-                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, mZoomLevel))
-                }
-            }
+            mGoogleMapController = GoogleMapController(it, googleMap, googleMapListener)
+            mGoogleMapController.moveCameraGoogleMap()
+            mGoogleMapController.updateCurrentLocation()
         }
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mGoogleMap = googleMap
-        mGoogleMap.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                mNakanoCenterLatLng,
-                mFirstZoomLevel
-            )
-        )
+    override fun setSearchResultText(searchText: String) {
+        super.setSearchResultText(searchText)
+        mGoogleMapController.searchAddressFromLocationName(searchText)
     }
 
     override fun onStart() {

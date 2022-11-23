@@ -54,10 +54,11 @@ dependencies {
 
     // Compose
 //    implementation "com.google.android.material:compose-theme-adapter:1.1.22"
-    implementation "com.google.accompanist:accompanist-appcompat-theme:0.25.1"
+//    implementation "com.google.accompanist:accompanist-appcompat-theme:0.25.1"
 
     // GoogleMap
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
+//    implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     // httpIO
     implementation "io.ktor:ktor-client-core:1.6.1"

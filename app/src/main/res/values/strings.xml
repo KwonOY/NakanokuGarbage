@@ -5,4 +5,6 @@
     <string name="firebase_db_block">block_jp</string>
 
     <string name="database_name">database</string>
+
+    <integer name="location_permission_request_code">1000</integer>
 </resources>
