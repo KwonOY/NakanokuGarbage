@@ -1,12 +1,12 @@
 package com.example.nakanokugarbage.Activity
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.nakanokugarbage.Manager.ShowFragmentManager
 import com.example.nakanokugarbage.R
 import com.example.nakanokugarbage.databinding.MainLayoutBinding
 
@@ -21,17 +21,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(mBinding.root)
 
         checkLocationPermission()
-        val intent = Intent(this, MytestActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-        finish()
 
-//        val nextShowFragment = ShowFragmentManager(this).getNextFragment(null)
-//        nextShowFragment?.run {
-//            val transaction = supportFragmentManager.beginTransaction()
-//            transaction.replace(mBinding.MainFrameLayout.id, this)
-//            transaction.commit()
-//        }
+        val nextShowFragment = ShowFragmentManager(this).getNextFragment(null)
+        nextShowFragment?.run {
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(mBinding.MainFrameLayout.id, this)
+            transaction.commit()
+        }
     }
 
     private fun checkLocationPermission() {

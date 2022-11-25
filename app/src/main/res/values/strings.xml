@@ -5,5 +5,8 @@
 
     <string name="database_name">database</string>
 
+    <string name="block_select">Selected Blcok</string>
+    <string name="block_select_message">Are You Suer %s Selected?</string>
+
     <integer name="location_permission_request_code">1000</integer>
 </resources>
