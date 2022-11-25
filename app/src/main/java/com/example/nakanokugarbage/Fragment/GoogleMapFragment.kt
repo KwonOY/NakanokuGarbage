@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.nakanokugarbage.Controller.GoogleMapController
+import com.example.nakanokugarbage.Interface.ChildSelectedListener
 import com.example.nakanokugarbage.Interface.GoogleMapListener
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -16,19 +17,19 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.example.nakanokugarbage.databinding.GooglemapLayoutBinding
 import com.google.android.gms.maps.model.LatLng
 
-class GoogleMapFragment(listener: SearchFragment.ChildResultListener) : BaseSearchChildFragment(), OnMapReadyCallback {
+class GoogleMapFragment() : BaseSearchChildFragment(), OnMapReadyCallback {
 
     private lateinit var mBinding: GooglemapLayoutBinding
     private lateinit var mMapView: MapView
     private lateinit var mGoogleMapController: GoogleMapController
-    private val mListener = listener
+    private lateinit var mListener: ChildSelectedListener
     private var needParentNotify = false
 
     private val googleMapListener = object: GoogleMapListener {
         override fun onAddressesReceive(addresses: List<Address>) {
             mGoogleMapController.moveCameraGoogleMap(addresses)
             if(needParentNotify) {
-                mListener.onReceiveResult(addresses[0].getAddressLine(0))
+                mListener.onReceiveSelected(addresses[0].getAddressLine(0))
                 needParentNotify = false
             }
         }
@@ -58,6 +59,10 @@ class GoogleMapFragment(listener: SearchFragment.ChildResultListener) : BaseSear
         mMapView.getMapAsync(this)
 
         return mBinding.root
+    }
+
+    fun setListener(listener: ChildSelectedListener){
+        mListener = listener
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

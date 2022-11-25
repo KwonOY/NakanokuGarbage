@@ -1,15 +1,12 @@
 package com.example.nakanokugarbage.Activity
 
-import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.nakanokugarbage.Fragment.SearchFragment
 import com.example.nakanokugarbage.R
 import com.example.nakanokugarbage.databinding.MainLayoutBinding
 
@@ -19,16 +16,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d("myTest","is Main")
         mBinding = MainLayoutBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
 
         checkLocationPermission()
+        val intent = Intent(this, MytestActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+        finish()
 
-        val searchFragment = SearchFragment()
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(mBinding.MainFrameLayout.id, searchFragment)
-        transaction.commit()
+//        val nextShowFragment = ShowFragmentManager(this).getNextFragment(null)
+//        nextShowFragment?.run {
+//            val transaction = supportFragmentManager.beginTransaction()
+//            transaction.replace(mBinding.MainFrameLayout.id, this)
+//            transaction.commit()
+//        }
     }
 
     private fun checkLocationPermission() {
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             R.integer.location_permission_request_code -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("Dilaog","is OK")
+                    Log.d("myTest","is OK")
                 }
             }
         }

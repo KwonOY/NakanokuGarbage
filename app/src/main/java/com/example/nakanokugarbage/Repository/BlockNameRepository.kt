@@ -2,7 +2,7 @@ package com.example.nakanokugarbage.Repository
 
 import androidx.lifecycle.MutableLiveData
 import com.example.nakanokugarbage.Constant
-import com.example.nakanokugarbage.Model.Block
+import com.example.nakanokugarbage.Model.BlockModel
 import com.google.firebase.database.*
 
 
@@ -10,25 +10,25 @@ open class BlockNameRepository {
 
     companion object mInstance: BlockNameRepository()
 
-    private val mBlockListLiveData: MutableLiveData<List<Block>> =
-        MutableLiveData<List<Block>>()
+    private val mBlockListLiveDataModel: MutableLiveData<List<BlockModel>> =
+        MutableLiveData<List<BlockModel>>()
 
     fun getInstance(): BlockNameRepository{
         return mInstance;
     }
 
-    fun getBlockList(): MutableLiveData<List<Block>>{
+    fun getBlockList(): MutableLiveData<List<BlockModel>>{
         val blockDb = FirebaseDatabase.getInstance().reference.child(Constant.FIREBASE_DB_BLOCK)
         blockDb.addValueEventListener(BlcokDatabaseValueEventListener())
-        return mBlockListLiveData;
+        return mBlockListLiveDataModel;
     }
 
     inner class BlcokDatabaseValueEventListener : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            val type = object : GenericTypeIndicator<List<Block>>() {}
+            val type = object : GenericTypeIndicator<List<BlockModel>>() {}
             val blocks = snapshot.getValue(type)
             blocks?.let {
-                mBlockListLiveData.value = it
+                mBlockListLiveDataModel.value = it
             }
         }
 

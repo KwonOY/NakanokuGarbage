@@ -1,75 +1,71 @@
 package com.example.nakanokugarbage.Fragment
 
-import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.KeyEvent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.nakanokugarbage.Dialog.CustomSelectDialog
+import com.example.nakanokugarbage.Helper.SharedPreferenceHelper
+import com.example.nakanokugarbage.Interface.AfterActionListener
+import com.example.nakanokugarbage.Interface.ChildSelectedListener
+import com.example.nakanokugarbage.Manager.ShowFragmentManager
+import com.example.nakanokugarbage.Model.BlockModel
+import com.example.nakanokugarbage.R
+import com.example.nakanokugarbage.View.ActionHideKeyboardTextView
 import com.example.nakanokugarbage.ViewModel.BlockNameViewModel
 import com.example.nakanokugarbage.databinding.SearchLayoutBinding
 
 class SearchFragment : Fragment() {
 
     private lateinit var mBinding: SearchLayoutBinding
-    private lateinit var mSearchEditTextView: AutoCompleteTextView
+    private lateinit var mSearchEditTextView: ActionHideKeyboardTextView
     private lateinit var mNowChildFragment: BaseSearchChildFragment
     private lateinit var mViewModel: BlockNameViewModel
 
-    interface ChildResultListener{
-        fun onReceiveResult(resultText: String)
+    private val mAfterActionListener = object: AfterActionListener {
+        override fun onAfterActionListener(view: View) {
+            mNowChildFragment.setSearchResultText(getText(view as TextView))
+        }
     }
-
-    private val mListener = object: ChildResultListener {
-        override fun onReceiveResult(resultText: String) {
-            var seachText = ""
+    private val mChildSeletedListener = object: ChildSelectedListener {
+        override fun onReceiveSelected(selectedText: String) {
+            var searchText = ""
             mViewModel.getBlockLiveData()?.let {
                 for(block in it.value!!){
-                    if(block.name in resultText) {
-                        seachText = block.name + "丁目"
+                    if(block.name in selectedText) {
+                        searchText = block.name + "丁目"
                     }
                 }
             }
             Handler(Looper.getMainLooper()).post {
-                mSearchEditTextView.setText(seachText)
+                mSearchEditTextView.setText(searchText)
             }
         }
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        mBinding = SearchLayoutBinding.inflate(inflater, container, false)
-        mSearchEditTextView = mBinding.SearchTextView
-
-        mSearchEditTextView.setOnItemClickListener { parent, view, position, id ->
-            mNowChildFragment.setSearchResultText(getText(view as TextView))
-            hideKeyboard(mBinding.root)
+    private val mSelectDialog = DialogInterface.OnClickListener { dialog, which ->
+        when(which) {
+            DialogInterface.BUTTON_POSITIVE ->
+                selectedPositive()
+            DialogInterface.BUTTON_NEGATIVE ->
+                Log.d("myTest","negative")
         }
-        mSearchEditTextView.setOnKeyListener { v, keyCode, event ->
-            if (event.keyCode == KeyEvent.KEYCODE_ENTER) {
-                mNowChildFragment.setSearchResultText(getText(v as TextView))
-                hideKeyboard(mBinding.root)
-            }
-            false
-        }
-        mViewModel = ViewModelProvider(this)[BlockNameViewModel::class.java]
-        mViewModel.getBlockLiveData()?.observe(viewLifecycleOwner, Observer {
-            if(mSearchEditTextView.adapter == null) {
+    }
+
+    private val mObserver =
+        Observer<List<BlockModel>> { blockModels ->
+            if(mSearchEditTextView.adapter == null && blockModels != null) {
                 val blockArray: ArrayList<String> = ArrayList()
-                for (block in it) {
-                    // TODO:　丁目削除
+                for (block in blockModels) {
                     blockArray.add(block.name + "丁目")
                 }
                 val adapter = ArrayAdapter(
@@ -79,26 +75,60 @@ class SearchFragment : Fragment() {
                 )
                 mSearchEditTextView.setAdapter(adapter)
             }
-        })
+        }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        mBinding = SearchLayoutBinding.inflate(inflater, container, false)
+        mSearchEditTextView = mBinding.SearchTextView
+        mSearchEditTextView.setAfterActionListener(mAfterActionListener)
+
+        mBinding.selectButton.setOnClickListener {
+            val message = String.format(getString(R.string.block_select_message), getText(mSearchEditTextView))
+            val dialog = CustomSelectDialog(requireContext())
+            dialog.createDialog(R.string.block_select, message, R.mipmap.ic_launcher)
+            dialog.setButtonListener(mSelectDialog)
+            dialog.show()
+        }
+
+        mViewModel = ViewModelProvider(this)[BlockNameViewModel::class.java]
+        mViewModel.getBlockLiveData()?.observe(viewLifecycleOwner, mObserver)
 
         return mBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mNowChildFragment = GoogleMapFragment(mListener)
+        mNowChildFragment = ShowFragmentManager(requireContext()).getChildFragment(this) as BaseSearchChildFragment
+        if( mNowChildFragment is GoogleMapFragment) {
+            (mNowChildFragment as GoogleMapFragment).setListener(mChildSeletedListener)
+        }
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(mBinding.SearchContentsLayout.id, mNowChildFragment)
         transaction.commit()
     }
 
-    private fun getText(textView: TextView): String {
-        return textView.text.toString()
+    private fun selectedPositive(){
+        val blockName = getText(mSearchEditTextView)
+        var blockNo = -1
+        mViewModel.getBlockLiveData()?.let {
+            for (block in it.value!!) {
+                if (block.name in blockName) {
+                    blockNo = block.index
+                }
+            }
+        }
+        if(blockNo > -1) {
+            SharedPreferenceHelper(requireContext()).setUserLocation(blockNo, blockName)
+        } else {
+            Toast.makeText(requireContext(), "Wrong Location", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private fun hideKeyboard(view: View) {
-        val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0);
-        view.clearFocus()
+    private fun getText(textView: TextView): String {
+        return textView.text.toString()
     }
 }
