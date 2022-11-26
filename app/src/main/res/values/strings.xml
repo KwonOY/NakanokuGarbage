@@ -9,4 +9,10 @@
     <string name="block_select_message">Are You Suer %s Selected?</string>
 
     <integer name="location_permission_request_code">1000</integer>
+
+    <string name="menu1">TOP</string>
+    <string name="menu2">Menu2</string>
+    <string name="menu3">Menu3</string>
+    <string name="menu4">Menu4</string>
+    <string name="menu5">Menu5</string>
 </resources>

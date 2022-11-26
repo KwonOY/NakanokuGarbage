@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@+id/menu1">
+
+    <fragment
+        android:id="@+id/menu1"
+        android:label="@string/menu1"
+        tools:layout="@layout/today_garbage_layout" />
+
+    <fragment
+        android:id="@+id/menu2"
+        android:label="@string/menu2"
+        tools:layout="@layout/alarm_layout" />
+
+    <fragment
+        android:id="@+id/menu3"
+        android:label="@string/menu3"
+        tools:layout="@layout/garbage_chart_layout" />
+    <fragment
+        android:id="@+id/menu4"
+        android:label="@string/menu4"
+        tools:layout="@layout/search_garbage_layout" />
+    <fragment
+        android:id="@+id/menu5"
+        android:label="@string/menu5"
+        tools:layout="@layout/setting_layout" />
+
+</navigation>

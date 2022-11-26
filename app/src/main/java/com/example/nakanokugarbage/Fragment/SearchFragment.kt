@@ -1,6 +1,7 @@
 package com.example.nakanokugarbage.Fragment
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,11 +15,12 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.nakanokugarbage.Activity.MainActivity
 import com.example.nakanokugarbage.Dialog.CustomSelectDialog
 import com.example.nakanokugarbage.Helper.SharedPreferenceHelper
 import com.example.nakanokugarbage.Interface.AfterActionListener
 import com.example.nakanokugarbage.Interface.ChildSelectedListener
-import com.example.nakanokugarbage.Manager.ShowFragmentManager
+import com.example.nakanokugarbage.Manager.ShowNextDisplayManager
 import com.example.nakanokugarbage.Model.BlockModel
 import com.example.nakanokugarbage.R
 import com.example.nakanokugarbage.View.ActionHideKeyboardTextView
@@ -54,8 +56,10 @@ class SearchFragment : Fragment() {
     }
     private val mSelectDialog = DialogInterface.OnClickListener { dialog, which ->
         when(which) {
-            DialogInterface.BUTTON_POSITIVE ->
+            DialogInterface.BUTTON_POSITIVE -> {
                 selectedPositive()
+                moveNextActivity()
+            }
             DialogInterface.BUTTON_NEGATIVE ->
                 Log.d("myTest","negative")
         }
@@ -102,7 +106,7 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mNowChildFragment = ShowFragmentManager(requireContext()).getChildFragment(this) as BaseSearchChildFragment
+        mNowChildFragment = ShowNextDisplayManager(requireContext()).getChildFragment(this) as BaseSearchChildFragment
         if( mNowChildFragment is GoogleMapFragment) {
             (mNowChildFragment as GoogleMapFragment).setListener(mChildSeletedListener)
         }
@@ -123,9 +127,16 @@ class SearchFragment : Fragment() {
         }
         if(blockNo > -1) {
             SharedPreferenceHelper(requireContext()).setUserLocation(blockNo, blockName)
+            activity?.finish()
         } else {
             Toast.makeText(requireContext(), "Wrong Location", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun moveNextActivity() {
+        val intetn = Intent(requireContext(), MainActivity::class.java)
+        startActivity(intetn)
+        activity?.finish()
     }
 
     private fun getText(textView: TextView): String {
